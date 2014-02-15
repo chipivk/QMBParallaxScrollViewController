@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 
 @protocol QMBParallaxScrollViewHolder <NSObject>
 
-- (UIScrollView *) scrollViewForParallexController;
+- (UIScrollView *)scrollViewForParallaxController;
 
 @end
 
@@ -95,6 +95,8 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 // inits
 -(void) setupWithTopViewController:(UIViewController *)topViewController andTopHeight:(CGFloat)height andBottomViewController:(UIViewController<QMBParallaxScrollViewHolder> *)bottomViewController;
 
+/// Observe a scrollview
+- (void)observeScrollView:(UIScrollView *)scrollView;
 
 // configs
 

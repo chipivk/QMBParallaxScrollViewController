@@ -11,42 +11,29 @@
 
 @interface QMBParallaxScrollViewController (){
     BOOL _isAnimating;
-    float _startTopHeight;
-    float _lastOffsetY;
+    CGFloat _startTopHeight;
+    CGFloat _lastOffsetY;
 }
 
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIView *foregroundView;
+
 @property (nonatomic, strong) UIScrollView *backgroundScrollView;
 @property (nonatomic, strong) UIScrollView *foregroundScrollView;
 
 @property (nonatomic, strong) UIScrollView *observedForegroundScrollView;
 
-@property (nonatomic, strong) UITapGestureRecognizer *topViewGestureRecognizer;
-@property (nonatomic, strong) UITapGestureRecognizer *bottomViewGestureRecognizer;
-@property (nonatomic, strong) UIScrollView *parallaxScrollView;
-@property (nonatomic, assign) CGFloat currentTopHeight;
-@property (nonatomic, strong, readwrite) UIViewController * topViewController;
-@property (nonatomic, strong, readwrite) UIViewController<QMBParallaxScrollViewHolder> * bottomViewController;
-
 @property (nonatomic, assign, readwrite) CGFloat topHeight;
-
 @property (nonatomic, assign, readwrite) CGFloat initialMaxHeightBorder;
 @property (nonatomic, assign, readwrite) CGFloat initialMinHeightBorder;
 
 @property (nonatomic, readwrite) QMBParallaxState state;
+@property (nonatomic, strong) UITapGestureRecognizer *topViewGestureRecognizer;
 @property (nonatomic, readwrite) QMBParallaxGesture lastGesture;
 
 @end
 
 @implementation QMBParallaxScrollViewController
-
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view.
-}
 
 - (void)dealloc{
     if ([[_backgroundView gestureRecognizers] containsObject:self.topViewGestureRecognizer]){
@@ -60,18 +47,19 @@
     }
 
     [self.view removeObserver:self forKeyPath:@"frame"];
-
 }
 
 #pragma mark - QMBParallaxScrollViewController Methods
 
-- (void)setupWithTopViewController:(UIViewController *)topViewController andTopHeight:(CGFloat)height andBottomViewController:(UIViewController *)bottomViewController{
+- (void)setupWithTopViewController:(UIViewController *)topViewController topHeight:(CGFloat)height bottomViewController:(UIViewController *)bottomViewController {
 
-    self.topViewController = topViewController;
-    self.bottomViewController = bottomViewController;
+    _topViewController = topViewController;
+    _bottomViewController = bottomViewController;
+
     _topHeight = height;
     _startTopHeight = _topHeight;
     _maxHeight = self.view.frame.size.height-50.0f;
+
     [self setMaxHeightBorder:MAX(1.5f*_topHeight, 300.0f)];
     [self setMinHeightBorder:_maxHeight-20.0f];
 
@@ -155,7 +143,7 @@
 
     self.lastGesture = QMBParallaxGestureTopViewTap;
 
-    [self showFullTopView: self.state != QMBParallaxStateFullSize];
+    [self presentFullTopViewController:self.state != QMBParallaxStateFullSize];
 }
 
 #pragma mark - NSObject Overrides
@@ -219,14 +207,12 @@
 
 - (void)updateForegroundFrame {
 
-
-
-    if ([_foregroundView isKindOfClass:[UIScrollView class]]){
-        _foregroundView.frame = CGRectMake(0.0f, _topHeight, self.view.frame.size.width, MAX(((UIScrollView *)_foregroundView).contentSize.height,_foregroundView.frame.size.height));
+    if ([self.foregroundView isKindOfClass:[UIScrollView class]]){
+        self.foregroundView.frame = CGRectMake(0.0f, _topHeight, self.view.frame.size.width, MAX(((UIScrollView *)_foregroundView).contentSize.height,_foregroundView.frame.size.height));
         CGSize size = CGSizeMake(self.view.frame.size.width,MAX(((UIScrollView *)_foregroundView).contentSize.height,_foregroundView.frame.size.height) + _topHeight);
 
         self.foregroundScrollView.contentSize = size;
-    }else {
+    } else {
         self.foregroundView.frame = CGRectMake(0.0f,
                                                _topHeight,
                                                self.foregroundView.frame.size.width,
@@ -240,7 +226,7 @@
 
 - (void)updateContentOffset {
 
-    if (2*self.foregroundScrollView.contentOffset.y>_foregroundView.frame.origin.y){
+    if (2 * self.foregroundScrollView.contentOffset.y > _foregroundView.frame.origin.y){
         [self.foregroundScrollView setShowsVerticalScrollIndicator:YES];
     }else {
         [self.foregroundScrollView setShowsVerticalScrollIndicator:NO];
@@ -254,9 +240,7 @@
     }
     _lastOffsetY = self.foregroundScrollView.contentOffset.y;
 
-    self.backgroundView.frame =
-    CGRectMake(0.0f,0.0f,self.view.frame.size.width,_topHeight+(-1)*self.foregroundScrollView.contentOffset.y);
-
+    self.backgroundView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), _topHeight + (-1) * self.foregroundScrollView.contentOffset.y );
     [self.backgroundView layoutIfNeeded];
 
 
@@ -264,48 +248,45 @@
         return;
     }
 
-    if (!_isAnimating && self.lastGesture == QMBParallaxGestureScrollsDown && self.foregroundScrollView.contentOffset.y-_startTopHeight < -_maxHeightBorder && self.state != QMBParallaxStateFullSize){
-        [self showFullTopView:YES];
+    if (!_isAnimating && self.lastGesture == QMBParallaxGestureScrollsDown && self.foregroundScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder && self.state != QMBParallaxStateFullSize){
+        [self presentFullTopViewController:YES];
         return;
     }
 
     if (!_isAnimating && self.lastGesture == QMBParallaxGestureScrollsUp && -_foregroundView.frame.origin.y + self.foregroundScrollView.contentOffset.y > -_minHeightBorder && self.state == QMBParallaxStateFullSize){
-        [self showFullTopView:NO];
+        [self presentFullTopViewController:NO];
         return;
     }
-
-
 }
 
-- (void) showFullTopView:(BOOL)show {
+- (void)presentFullTopViewController:(BOOL)show {
 
     _isAnimating = YES;
     [self.foregroundScrollView setScrollEnabled:NO];
 
-    [UIView animateWithDuration:.3
-                          delay:0.0
-                        options:UIViewAnimationOptionCurveEaseInOut|UIViewKeyframeAnimationOptionBeginFromCurrentState
-                     animations:^{
+    UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseInOut|UIViewKeyframeAnimationOptionBeginFromCurrentState;
 
-                         [self changeTopHeight:show ?  _maxHeight : _startTopHeight];
-                     }
-                     completion:^(BOOL finished){
+    [UIView animateWithDuration:.3 delay:0.0 options:options animations:^{
+         [self changeTopHeight:show ?  _maxHeight : _startTopHeight];
+     }
+     completion:^(BOOL finished){
 
-                         _isAnimating = NO;
-                         [self.foregroundScrollView setScrollEnabled:YES];
+         _isAnimating = NO;
+         [self.foregroundScrollView setScrollEnabled:YES];
 
-                         if (self.state == QMBParallaxStateFullSize){
-                             self.state = QMBParallaxStateVisible;
-                             self.maxHeightBorder = self.initialMaxHeightBorder;
-                         } else {
-                             self.state = QMBParallaxStateFullSize;
-                             self.minHeightBorder = self.initialMinHeightBorder;
-                         }
+         if (self.state == QMBParallaxStateFullSize){
+             self.state = QMBParallaxStateVisible;
+             self.maxHeightBorder = self.initialMaxHeightBorder;
 
-                         if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeState:)]){
-                             [self.delegate parallaxScrollViewController:self didChangeState:self.state];
-                         }
-                     }];
+         } else {
+             self.state = QMBParallaxStateFullSize;
+             self.minHeightBorder = self.initialMinHeightBorder;
+         }
+
+         if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeState:)]){
+             [self.delegate parallaxScrollViewController:self didChangeState:self.state];
+         }
+     }];
 }
 
 

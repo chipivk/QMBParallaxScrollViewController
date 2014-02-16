@@ -6,20 +6,19 @@
 //  Copyright (c) 2013 Toni Möckel. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @class QMBParallaxScrollViewController;
 
 typedef NS_ENUM(NSUInteger, QMBParallaxState) {
-    QMBParallaxStateVisible = 0,
-    QMBParallaxStateFullSize = 1,
-    QMBParallaxStateHidden = 2,
+    QMBParallaxStateVisible,
+    QMBParallaxStateFullSize,
+    QMBParallaxStateContentPeakSize,
+    QMBParallaxStateHidden,
 };
 
 typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
-    QMBParallaxGestureTopViewTap = 0,
-    QMBParallaxGestureScrollsDown = 1,
-    QMBParallaxGestureScrollsUp = 2,
+    QMBParallaxGestureTopViewTap,
+    QMBParallaxGestureScrollsDown,
+    QMBParallaxGestureScrollsUp,
 };
 
 @protocol QMBParallaxScrollViewHolder <NSObject>
@@ -56,23 +55,23 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 
 @property (nonatomic, strong) id<QMBParallaxScrollViewControllerDelegate> delegate;
 
-@property (nonatomic, strong, readonly) UIViewController * topViewController;
-@property (nonatomic, strong, readonly) UIViewController<QMBParallaxScrollViewHolder> * bottomViewController;
+@property (nonatomic, strong, readonly) UIViewController *topViewController;
+@property (nonatomic, strong, readonly) UIViewController *bottomViewController;
 
 @property (nonatomic, assign, readonly) CGFloat topHeight;
-@property (nonatomic, assign, setter = setMaxHeight:) CGFloat maxHeight;
+@property (nonatomic, assign) CGFloat maxHeight;
 
 /**
  * Set the height of the border (margin from top) that has to be scrolled over to expand the background view.
  * Default: 1.3 * topHeight
  */
-@property (nonatomic, assign, setter = setMaxHeightBorder:) CGFloat maxHeightBorder;
+@property (nonatomic, assign) CGFloat maxHeightBorder;
 
 /**
  * Set the height of the border (margin from top) that has to be scrolled under to minimize the background view
  * Default: fullHeight - 5.0f
  */
-@property (nonatomic, assign, setter = setMinHeightBorder:) CGFloat minHeightBorder;
+@property (nonatomic, assign) CGFloat minHeightBorder;
 
 /**
  * To enable section support for UITableViews, default: true if UITableView is client scrollview
@@ -93,7 +92,7 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 @property (nonatomic, weak) id<UIScrollViewDelegate> scrollViewDelegate;
 
 // inits
--(void) setupWithTopViewController:(UIViewController *)topViewController andTopHeight:(CGFloat)height andBottomViewController:(UIViewController<QMBParallaxScrollViewHolder> *)bottomViewController;
+-(void)setupWithTopViewController:(UIViewController *)topViewController topHeight:(CGFloat)height bottomViewController:(UIViewController *)bottomViewController;
 
 /// Observe a scrollview
 - (void)observeScrollView:(UIScrollView *)scrollView;
@@ -104,6 +103,8 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
  * Config to enable or disable top-view tap control
  * Call will be responsed by QMBParallaxScrollViewControllerDelegate instance
  */
-- (void) enableTapGestureTopView:(BOOL) enable;
+- (void)enableTapGestureTopView:(BOOL) enable;
+
+- (void)presentFullTopViewController:(BOOL)show;
 
 @end

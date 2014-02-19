@@ -193,17 +193,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     [self updateContentOffset];
 }
 
-
-#pragma mark - Internal Methods
-
-
-
-- (CGRect)frameForObject:(id)frameObject {
-    return frameObject == [NSNull null] ? CGRectNull : [frameObject CGRectValue];
-}
-
 #pragma mark Parallax Effect
-
 
 - (void)updateForegroundFrame {
 

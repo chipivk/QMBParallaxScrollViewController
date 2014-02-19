@@ -10,6 +10,7 @@
 
 
 static void * QMBParallaxScrollViewControllerScrollViewContext = &QMBParallaxScrollViewControllerScrollViewContext;
+static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollViewControllerFrameContext;
 
 @interface QMBParallaxScrollViewController (){
     BOOL _isAnimating;
@@ -39,13 +40,8 @@ static void * QMBParallaxScrollViewControllerScrollViewContext = &QMBParallaxScr
         [_topView removeGestureRecognizer:self.topViewGestureRecognizer];
     }
 
-    // Remove Observer
-    if ([_bottomView isKindOfClass:[UIScrollView class]]){
-        UIScrollView *foregroundScrollView = (UIScrollView *) _bottomView;
-        [foregroundScrollView removeObserver:self forKeyPath:@"contentSize"];
-    }
-
-    [self.view removeObserver:self forKeyPath:@"frame"];
+    [_observedScrollView removeObserver:self forKeyPath:@"contentSize" context:QMBParallaxScrollViewControllerScrollViewContext];
+    [self.view removeObserver:self forKeyPath:@"frame" context:QMBParallaxScrollViewControllerFrameContext];
 }
 
 #pragma mark - QMBParallaxScrollViewController Methods
@@ -91,12 +87,7 @@ static void * QMBParallaxScrollViewControllerScrollViewContext = &QMBParallaxScr
     [self updateContentOffset];
 
 
-    // If forground subview is UIScrollView set KV-Observer for any Content Size Changes
-    if ([_bottomView isKindOfClass:[UIScrollView class]]){
-        self.observedScrollView = _bottomView;
-    }
-
-    [self.view addObserver:self forKeyPath:@"frame" options:0 context:NULL];
+    [self.view addObserver:self forKeyPath:@"frame" options:0 context:QMBParallaxScrollViewControllerFrameContext];
 
 }
 
@@ -113,7 +104,7 @@ static void * QMBParallaxScrollViewControllerScrollViewContext = &QMBParallaxScr
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == QMBParallaxScrollViewControllerScrollViewContext) {
+    if (context == QMBParallaxScrollViewControllerScrollViewContext || context == QMBParallaxScrollViewControllerFrameContext) {
         [self updateForegroundFrame];
         [self updateContentOffset];
     } else {

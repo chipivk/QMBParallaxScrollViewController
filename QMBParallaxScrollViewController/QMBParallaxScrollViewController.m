@@ -18,6 +18,9 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     CGFloat _lastOffsetY;
 }
 
+@property (readwrite, nonatomic, strong) UIViewController *topViewController;
+@property (readwrite, nonatomic, strong) UIViewController *bottomViewController;
+
 @property (readwrite, nonatomic, strong) UIView *topView;
 @property (readwrite, nonatomic, strong) UIView *bottomView;
 
@@ -47,23 +50,12 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 #pragma mark - QMBParallaxScrollViewController Methods
 
 - (void)setupWithTopViewController:(UIViewController *)topViewController topHeight:(CGFloat)height bottomViewController:(UIViewController *)bottomViewController {
-
-    _topViewController = topViewController;
-    _bottomViewController = bottomViewController;
-
     _topHeight = height;
     _startTopHeight = _topHeight;
     _maxHeight = self.view.frame.size.height-50.0f;
 
     [self setMaxHeightBorder:MAX(1.5f*_topHeight, 300.0f)];
     [self setMinHeightBorder:_maxHeight-20.0f];
-
-    [self addChildViewController:self.topViewController];
-    _topView = topViewController.view;
-    [_topView setClipsToBounds:YES];
-
-    [self addChildViewController:self.bottomViewController];
-    _bottomView = bottomViewController.view;
 
     _bottomScrollView = [UIScrollView new];
     _bottomScrollView.backgroundColor = [UIColor clearColor];
@@ -73,22 +65,63 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     _bottomScrollView.delegate = self;
     [_bottomScrollView setAlwaysBounceVertical:YES];
     _bottomScrollView.frame = self.view.frame;
-    [_bottomScrollView addSubview:_bottomView];
 
     [self.view addSubview:_bottomScrollView];
-    [self.bottomViewController didMoveToParentViewController:self];
 
-    [self.view addSubview:_topView];
-    [self.topViewController didMoveToParentViewController:self];
+    self.topViewController = topViewController;
+    self.bottomViewController = bottomViewController;
 
     [self addGestureReconizer];
 
     [self updateForegroundFrame];
     [self updateContentOffset];
 
-
     [self.view addObserver:self forKeyPath:@"frame" options:0 context:QMBParallaxScrollViewControllerFrameContext];
 
+}
+
+#pragma mark - Properties
+
+- (void)setTopViewController:(UIViewController *)topViewController {
+    [_topViewController removeFromParentViewController];
+
+    _topViewController = topViewController;
+
+    [_topViewController willMoveToParentViewController:self];
+    [self addChildViewController:_topViewController];
+
+    self.topView = _topViewController.view;
+
+    [_topViewController didMoveToParentViewController:self];
+}
+
+- (void)setBottomViewController:(UIViewController *)bottomViewController {
+    [_bottomViewController removeFromParentViewController];
+
+    _bottomViewController = bottomViewController;
+
+    [_bottomViewController willMoveToParentViewController:self];
+    [self addChildViewController:_bottomViewController];
+
+    self.bottomView = _bottomViewController.view;
+
+    [_bottomViewController didMoveToParentViewController:self];
+}
+
+- (void)setTopView:(UIView *)topView {
+    [_topView removeFromSuperview];
+
+    _topView = topView;
+
+    [self.view addSubview:_topView];
+}
+
+- (void)setBottomView:(UIView *)bottomView {
+    [_bottomView removeFromSuperview];
+
+    _bottomView = bottomView;
+
+    [self.bottomScrollView addSubview:_bottomView];
 }
 
 - (void)setObservedScrollView:(UIScrollView *)observedScrollView;

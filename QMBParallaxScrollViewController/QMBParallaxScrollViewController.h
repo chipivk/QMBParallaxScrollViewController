@@ -18,12 +18,6 @@ typedef NS_ENUM(NSUInteger, QMBScrollDirection) {
     QMBScrollDirectionDown,
 };
 
-@protocol QMBParallaxScrollViewHolder <NSObject>
-
-- (UIScrollView *)scrollViewForParallaxController;
-
-@end
-
 @interface QMBParallaxScrollViewController : UIViewController<UIGestureRecognizerDelegate, UIScrollViewDelegate>
 
 @property (readonly, nonatomic, strong) UIViewController *topViewController;
@@ -43,17 +37,6 @@ typedef NS_ENUM(NSUInteger, QMBScrollDirection) {
  * Default: fullHeight - 5.0f
  */
 @property (readwrite, nonatomic, assign) CGFloat minHeightBorder;
-
-/**
- * To enable section support for UITableViews, default: true if UITableView is client scrollview
- * TODO: this option will disable decelerated scrolling (known bug)
- */
-@property (readwrite, nonatomic, assign) BOOL enableSectionSupport;
-
-/**
- * The Parallax Scrollview that embeds the bottom (foreground) view
- */
-@property (readonly, nonatomic, strong) UIScrollView *parallaxScrollView;
 
 /**
  * Use the scrollview delegate for custom actions

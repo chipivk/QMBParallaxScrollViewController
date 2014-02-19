@@ -15,20 +15,20 @@
     CGFloat _lastOffsetY;
 }
 
-@property (nonatomic, strong) UIView *topView;
-@property (nonatomic, strong) UIView *bottomView;
+@property (readwrite, nonatomic, strong) UIView *topView;
+@property (readwrite, nonatomic, strong) UIView *bottomView;
 
-@property (nonatomic, strong) UIScrollView *bottomScrollView;
+@property (readwrite, nonatomic, strong) UIScrollView *bottomScrollView;
 
-@property (nonatomic, strong) UIScrollView *observedForegroundScrollView;
+@property (readwrite, nonatomic, strong) UIScrollView *observedForegroundScrollView;
 
-@property (nonatomic, assign, readwrite) CGFloat topHeight;
-@property (nonatomic, assign, readwrite) CGFloat initialMaxHeightBorder;
-@property (nonatomic, assign, readwrite) CGFloat initialMinHeightBorder;
+@property (readwrite, nonatomic, assign) CGFloat topHeight;
+@property (readwrite, nonatomic, assign) CGFloat initialMaxHeightBorder;
+@property (readwrite, nonatomic, assign) CGFloat initialMinHeightBorder;
 
-@property (nonatomic, readwrite) QMBParallaxState state;
-@property (nonatomic, strong) UITapGestureRecognizer *topViewGestureRecognizer;
-@property (nonatomic, readwrite) QMBParallaxGesture lastGesture;
+@property (readwrite, nonatomic, assign) QMBParallaxState state;
+@property (readwrite, nonatomic, strong) UITapGestureRecognizer *topViewGestureRecognizer;
+@property (readwrite, nonatomic, assign) QMBParallaxGesture lastGesture;
 
 @end
 

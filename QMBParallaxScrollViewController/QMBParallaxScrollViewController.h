@@ -53,43 +53,43 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 
 @interface QMBParallaxScrollViewController : UIViewController<UIGestureRecognizerDelegate, UIScrollViewDelegate>
 
-@property (nonatomic, strong) id<QMBParallaxScrollViewControllerDelegate> delegate;
+@property (readwrite, nonatomic, strong) id<QMBParallaxScrollViewControllerDelegate> delegate;
 
-@property (nonatomic, strong, readonly) UIViewController *topViewController;
-@property (nonatomic, strong, readonly) UIViewController *bottomViewController;
+@property (readonly, nonatomic, strong) UIViewController *topViewController;
+@property (readonly, nonatomic, strong) UIViewController *bottomViewController;
 
-@property (nonatomic, assign, readonly) CGFloat topHeight;
-@property (nonatomic, assign) CGFloat maxHeight;
+@property (readonly, nonatomic, assign) CGFloat topHeight;
+@property (readwrite, nonatomic, assign) CGFloat maxHeight;
 
 /**
  * Set the height of the border (margin from top) that has to be scrolled over to expand the background view.
  * Default: 1.3 * topHeight
  */
-@property (nonatomic, assign) CGFloat maxHeightBorder;
+@property (readwrite, nonatomic, assign) CGFloat maxHeightBorder;
 
 /**
  * Set the height of the border (margin from top) that has to be scrolled under to minimize the background view
  * Default: fullHeight - 5.0f
  */
-@property (nonatomic, assign) CGFloat minHeightBorder;
+@property (readwrite, nonatomic, assign) CGFloat minHeightBorder;
 
 /**
  * To enable section support for UITableViews, default: true if UITableView is client scrollview
  * TODO: this option will disable decelerated scrolling (known bug)
  */
-@property (nonatomic, assign) BOOL enableSectionSupport;
+@property (readwrite, nonatomic, assign) BOOL enableSectionSupport;
 
-@property (nonatomic, readonly) QMBParallaxState state;
+@property (readonly, nonatomic, assign) QMBParallaxState state;
 
 /**
  * The Parallax Scrollview that embeds the bottom (foreground) view
  */
-@property (nonatomic, readonly) UIScrollView *parallaxScrollView;
+@property (readonly, nonatomic, strong) UIScrollView *parallaxScrollView;
 
 /**
  * Use the scrollview delegate for custom actions
  */
-@property (nonatomic, weak) id<UIScrollViewDelegate> scrollViewDelegate;
+@property (readwrite, nonatomic, weak) id<UIScrollViewDelegate> scrollViewDelegate;
 
 // inits
 -(void)setupWithTopViewController:(UIViewController *)topViewController topHeight:(CGFloat)height bottomViewController:(UIViewController *)bottomViewController;

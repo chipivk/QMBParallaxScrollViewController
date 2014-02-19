@@ -57,17 +57,6 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     [self setMaxHeightBorder:MAX(1.5f*_topHeight, 300.0f)];
     [self setMinHeightBorder:_maxHeight-20.0f];
 
-    _bottomScrollView = [UIScrollView new];
-    _bottomScrollView.backgroundColor = [UIColor clearColor];
-    if ([self respondsToSelector:@selector(topLayoutGuide)]){
-        [self.bottomScrollView setContentInset:UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0)];
-    }
-    _bottomScrollView.delegate = self;
-    [_bottomScrollView setAlwaysBounceVertical:YES];
-    _bottomScrollView.frame = self.view.frame;
-
-    [self.view addSubview:_bottomScrollView];
-
     self.topViewController = topViewController;
     self.bottomViewController = bottomViewController;
 
@@ -131,6 +120,21 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     _observedScrollView = observedScrollView;
 
     [_observedScrollView addObserver:self forKeyPath:@"contentSize" options:0 context:QMBParallaxScrollViewControllerScrollViewContext];
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.bottomScrollView = [[UIScrollView alloc] init];
+    self.bottomScrollView.backgroundColor = [UIColor clearColor];
+    self.bottomScrollView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0);
+    self.bottomScrollView.delegate = self;
+    self.bottomScrollView.alwaysBounceVertical = YES;
+    self.bottomScrollView.frame = self.view.frame;
+
+    [self.view addSubview:self.bottomScrollView];
 }
 
 #pragma mark - Obersver

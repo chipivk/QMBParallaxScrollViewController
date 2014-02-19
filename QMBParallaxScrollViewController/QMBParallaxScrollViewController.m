@@ -12,8 +12,7 @@
 static void * QMBParallaxScrollViewControllerScrollViewContext = &QMBParallaxScrollViewControllerScrollViewContext;
 static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollViewControllerFrameContext;
 
-@interface QMBParallaxScrollViewController (){
-    BOOL _isAnimating;
+@interface QMBParallaxScrollViewController () {
     CGFloat _startTopHeight;
     CGFloat _lastOffsetY;
 }
@@ -29,6 +28,8 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 @property (readwrite, nonatomic, assign) CGFloat topHeight;
 @property (readwrite, nonatomic, assign) CGFloat initialMaxHeightBorder;
 @property (readwrite, nonatomic, assign) CGFloat initialMinHeightBorder;
+
+@property (readwrite, nonatomic, assign, getter = isAnimating) BOOL animating;
 
 @property (readwrite, nonatomic, assign) QMBParallaxState state;
 
@@ -173,7 +174,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-    if (!_isAnimating && self.bottomScrollView.contentOffset.y-_startTopHeight > -_maxHeightBorder && self.state == QMBParallaxStateFullSize){
+    if (!self.animating && self.bottomScrollView.contentOffset.y-_startTopHeight > -_maxHeightBorder && self.state == QMBParallaxStateFullSize){
         [self.bottomScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
     }
 }
@@ -239,23 +240,22 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     [self.topView layoutIfNeeded];
 
 
-    if (_isAnimating) return;
+    if (self.animating) return;
 
 
-    if (!_isAnimating && self.scrollDirection == QMBScrollDirectionDown && self.bottomScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder && self.state != QMBParallaxStateFullSize){
+    if (!self.animating && self.scrollDirection == QMBScrollDirectionDown && self.bottomScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder && self.state != QMBParallaxStateFullSize){
         [self presentFullTopViewController:YES];
         return;
     }
 
-    if (!_isAnimating && self.scrollDirection == QMBScrollDirectionUp && -_bottomView.frame.origin.y + self.bottomScrollView.contentOffset.y > -_minHeightBorder && self.state == QMBParallaxStateFullSize){
+    if (!self.animating && self.scrollDirection == QMBScrollDirectionUp && -_bottomView.frame.origin.y + self.bottomScrollView.contentOffset.y > -_minHeightBorder && self.state == QMBParallaxStateFullSize){
         [self presentFullTopViewController:NO];
         return;
     }
 }
 
 - (void)presentFullTopViewController:(BOOL)show {
-
-    _isAnimating = YES;
+    self.animating = YES;
     [self.bottomScrollView setScrollEnabled:NO];
 
     UIViewAnimationOptions options = UIViewAnimationOptionCurveEaseInOut|UIViewKeyframeAnimationOptionBeginFromCurrentState;
@@ -264,8 +264,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
          [self changeTopHeight:show ?  _maxHeight : _startTopHeight];
      }
      completion:^(BOOL finished){
-
-         _isAnimating = NO;
+         self.animating = NO;
          [self.bottomScrollView setScrollEnabled:YES];
 
          if (self.state == QMBParallaxStateFullSize){

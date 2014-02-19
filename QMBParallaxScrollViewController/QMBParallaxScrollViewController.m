@@ -18,7 +18,6 @@
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIView *foregroundView;
 
-@property (nonatomic, strong) UIScrollView *backgroundScrollView;
 @property (nonatomic, strong) UIScrollView *foregroundScrollView;
 
 @property (nonatomic, strong) UIScrollView *observedForegroundScrollView;
@@ -65,7 +64,6 @@
 
     [self addChildViewController:self.topViewController];
     _backgroundView = topViewController.view;
-    [_backgroundScrollView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [_backgroundView setClipsToBounds:YES];
 
     [self addChildViewController:self.bottomViewController];

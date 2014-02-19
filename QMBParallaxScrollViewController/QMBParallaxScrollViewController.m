@@ -195,8 +195,10 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 #pragma mark - UIScrollViewDelegate Protocol Methods
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    NSParameterAssert(scrollView == self.bottomScrollView);
 
     [self updateContentOffset];
+
     if ([self.scrollViewDelegate respondsToSelector:_cmd]) {
         [self.scrollViewDelegate scrollViewDidScroll:scrollView];
     }

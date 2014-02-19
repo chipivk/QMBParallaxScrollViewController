@@ -31,19 +31,16 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 @property (readwrite, nonatomic, assign) CGFloat initialMinHeightBorder;
 
 @property (readwrite, nonatomic, assign) QMBParallaxState state;
-@property (readwrite, nonatomic, strong) UITapGestureRecognizer *topViewGestureRecognizer;
-@property (readwrite, nonatomic, assign) QMBParallaxGesture lastGesture;
+
+@property (readwrite, nonatomic, assign) QMBScrollDirection scrollDirection;
 
 @end
 
 @implementation QMBParallaxScrollViewController
 
 - (void)dealloc{
-    if ([[_topView gestureRecognizers] containsObject:self.topViewGestureRecognizer]){
-        [_topView removeGestureRecognizer:self.topViewGestureRecognizer];
-    }
-
     [_observedScrollView removeObserver:self forKeyPath:@"contentSize" context:QMBParallaxScrollViewControllerScrollViewContext];
+
     [self.view removeObserver:self forKeyPath:@"frame" context:QMBParallaxScrollViewControllerFrameContext];
 }
 
@@ -60,13 +57,10 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     self.topViewController = topViewController;
     self.bottomViewController = bottomViewController;
 
-    [self addGestureReconizer];
-
     [self updateForegroundFrame];
     [self updateContentOffset];
 
     [self.view addObserver:self forKeyPath:@"frame" options:0 context:QMBParallaxScrollViewControllerFrameContext];
-
 }
 
 #pragma mark - Properties
@@ -147,32 +141,6 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
-}
-
-#pragma mark - Gestures
-
--(void) addGestureReconizer{
-    self.topViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    [self.topViewGestureRecognizer setNumberOfTouchesRequired:1];
-    [self.topViewGestureRecognizer setNumberOfTapsRequired:1];
-    [self.topViewController.view setUserInteractionEnabled:YES];
-
-    [self enableTapGestureTopView:YES];
-}
-
-- (void)enableTapGestureTopView:(BOOL)enable{
-    if (enable) {
-        [_topView addGestureRecognizer:self.topViewGestureRecognizer];
-    }else {
-        [_topView removeGestureRecognizer:self.topViewGestureRecognizer];
-    }
-}
-
-- (void) handleTap:(id)sender {
-
-    self.lastGesture = QMBParallaxGestureTopViewTap;
-
-    [self presentFullTopViewController:self.state != QMBParallaxStateFullSize];
 }
 
 #pragma mark - NSObject Overrides
@@ -263,28 +231,23 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
         [self.bottomScrollView setShowsVerticalScrollIndicator:NO];
     }
 
-    // Determine if user scrolls up or down
-    if (self.bottomScrollView.contentOffset.y > _lastOffsetY){
-        self.lastGesture = QMBParallaxGestureScrollsUp;
-    }else {
-        self.lastGesture = QMBParallaxGestureScrollsDown;
-    }
+    self.scrollDirection = self.bottomScrollView.contentOffset.y > _lastOffsetY ? QMBScrollDirectionUp : QMBScrollDirectionDown;
+
     _lastOffsetY = self.bottomScrollView.contentOffset.y;
 
     self.topView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), _topHeight + (-1) * self.bottomScrollView.contentOffset.y );
     [self.topView layoutIfNeeded];
 
 
-    if (_isAnimating){
-        return;
-    }
+    if (_isAnimating) return;
 
-    if (!_isAnimating && self.lastGesture == QMBParallaxGestureScrollsDown && self.bottomScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder && self.state != QMBParallaxStateFullSize){
+
+    if (!_isAnimating && self.scrollDirection == QMBScrollDirectionDown && self.bottomScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder && self.state != QMBParallaxStateFullSize){
         [self presentFullTopViewController:YES];
         return;
     }
 
-    if (!_isAnimating && self.lastGesture == QMBParallaxGestureScrollsUp && -_bottomView.frame.origin.y + self.bottomScrollView.contentOffset.y > -_minHeightBorder && self.state == QMBParallaxStateFullSize){
+    if (!_isAnimating && self.scrollDirection == QMBScrollDirectionUp && -_bottomView.frame.origin.y + self.bottomScrollView.contentOffset.y > -_minHeightBorder && self.state == QMBParallaxStateFullSize){
         [self presentFullTopViewController:NO];
         return;
     }
@@ -313,10 +276,6 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
              self.state = QMBParallaxStateFullSize;
              self.minHeightBorder = self.initialMinHeightBorder;
          }
-
-         if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeState:)]){
-             [self.delegate parallaxScrollViewController:self didChangeState:self.state];
-         }
      }];
 }
 
@@ -327,10 +286,6 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 
     [self updateContentOffset];
     [self updateForegroundFrame];
-
-    if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeTopHeight:)]){
-        [self.delegate parallaxScrollViewController:self didChangeTopHeight:height];
-    }
 }
 
 #pragma mark - Borders

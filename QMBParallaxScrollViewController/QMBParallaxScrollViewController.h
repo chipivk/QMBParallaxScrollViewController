@@ -15,10 +15,9 @@ typedef NS_ENUM(NSUInteger, QMBParallaxState) {
     QMBParallaxStateHidden,
 };
 
-typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
-    QMBParallaxGestureTopViewTap,
-    QMBParallaxGestureScrollsDown,
-    QMBParallaxGestureScrollsUp,
+typedef NS_ENUM(NSUInteger, QMBScrollDirection) {
+    QMBScrollDirectionUp,
+    QMBScrollDirectionDown,
 };
 
 @protocol QMBParallaxScrollViewHolder <NSObject>
@@ -27,33 +26,7 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 
 @end
 
-@protocol QMBParallaxScrollViewControllerDelegate <NSObject>
-
-@optional
-
-/**
- * Callback when the user tapped the top-view
- * sender is usually the UITapGestureRecognizer instance
- */
-- (void) parallaxScrollViewController:(QMBParallaxScrollViewController *) controller didChangeGesture:(QMBParallaxGesture)newGesture oldGesture:(QMBParallaxGesture)oldGesture;
-
-/**
- * Callback when the state changed to QMBParallaxStateFullSize, QMBParallaxStateVisible or QMBParallaxStateHidden
- */
-- (void) parallaxScrollViewController:(QMBParallaxScrollViewController *) controller didChangeState:(QMBParallaxState) state;
-
-/**
- * Callback when the top height changed
- */
-- (void) parallaxScrollViewController:(QMBParallaxScrollViewController *) controller didChangeTopHeight:(CGFloat) height;
-
-@end
-
-
-
 @interface QMBParallaxScrollViewController : UIViewController<UIGestureRecognizerDelegate, UIScrollViewDelegate>
-
-@property (readwrite, nonatomic, strong) id<QMBParallaxScrollViewControllerDelegate> delegate;
 
 @property (readonly, nonatomic, strong) UIViewController *topViewController;
 @property (readonly, nonatomic, strong) UIViewController *bottomViewController;
@@ -96,13 +69,6 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 
 @property (readwrite, nonatomic, strong) UIScrollView *observedScrollView;
 
-// configs
-
-/**
- * Config to enable or disable top-view tap control
- * Call will be responsed by QMBParallaxScrollViewControllerDelegate instance
- */
-- (void)enableTapGestureTopView:(BOOL) enable;
 
 - (void)presentFullTopViewController:(BOOL)show;
 

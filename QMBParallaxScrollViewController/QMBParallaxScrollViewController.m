@@ -9,6 +9,8 @@
 #import "QMBParallaxScrollViewController.h"
 
 
+static void * QMBParallaxScrollViewControllerScrollViewContext = &QMBParallaxScrollViewControllerScrollViewContext;
+
 @interface QMBParallaxScrollViewController (){
     BOOL _isAnimating;
     CGFloat _startTopHeight;
@@ -19,8 +21,6 @@
 @property (readwrite, nonatomic, strong) UIView *bottomView;
 
 @property (readwrite, nonatomic, strong) UIScrollView *bottomScrollView;
-
-@property (readwrite, nonatomic, strong) UIScrollView *observedForegroundScrollView;
 
 @property (readwrite, nonatomic, assign) CGFloat topHeight;
 @property (readwrite, nonatomic, assign) CGFloat initialMaxHeightBorder;
@@ -93,29 +93,32 @@
 
     // If forground subview is UIScrollView set KV-Observer for any Content Size Changes
     if ([_bottomView isKindOfClass:[UIScrollView class]]){
-        [self observeScrollView:(id) _bottomView];
+        self.observedScrollView = _bottomView;
     }
 
     [self.view addObserver:self forKeyPath:@"frame" options:0 context:NULL];
 
 }
 
-- (void)observeScrollView:(UIScrollView *)scrollView
+- (void)setObservedScrollView:(UIScrollView *)observedScrollView;
 {
-    if(self.observedForegroundScrollView){
-        [self.observedForegroundScrollView removeObserver:self forKeyPath:@"contentSize"];
-    }
+    [_observedScrollView removeObserver:self forKeyPath:@"contentSize" context:QMBParallaxScrollViewControllerScrollViewContext];
 
-    [scrollView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
-    self.observedForegroundScrollView = scrollView;
+    _observedScrollView = observedScrollView;
+
+    [_observedScrollView addObserver:self forKeyPath:@"contentSize" options:0 context:QMBParallaxScrollViewControllerScrollViewContext];
 }
 
 #pragma mark - Obersver
 
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
-                       change:(NSDictionary *)change context:(void*)context {
-    [self updateForegroundFrame];
-    [self updateContentOffset];
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == QMBParallaxScrollViewControllerScrollViewContext) {
+        [self updateForegroundFrame];
+        [self updateContentOffset];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 #pragma mark - Gestures

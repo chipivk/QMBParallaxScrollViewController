@@ -94,8 +94,7 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 // inits
 -(void)setupWithTopViewController:(UIViewController *)topViewController topHeight:(CGFloat)height bottomViewController:(UIViewController *)bottomViewController;
 
-/// Observe a scrollview
-- (void)observeScrollView:(UIScrollView *)scrollView;
+@property (readwrite, nonatomic, strong) UIScrollView *observedScrollView;
 
 // configs
 

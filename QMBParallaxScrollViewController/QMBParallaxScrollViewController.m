@@ -31,7 +31,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 
 @property (readwrite, nonatomic, assign, getter = isAnimating) BOOL animating;
 
-@property (readwrite, nonatomic, assign) QMBParallaxState bottomViewControllerVisibility;
+@property (readwrite, nonatomic, assign) QMBBottomViewControllerVisibility bottomViewControllerVisibility;
 
 @property (readwrite, nonatomic, assign) QMBScrollDirection scrollDirection;
 
@@ -174,7 +174,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-    if (!self.animating && self.bottomScrollView.contentOffset.y-_startTopHeight > -_maxHeightBorder && self.bottomViewControllerVisibility == QMBParallaxStateMaximized){
+    if (!self.animating && self.bottomScrollView.contentOffset.y-_startTopHeight > -_maxHeightBorder && self.bottomViewControllerVisibility == QMBBottomViewControllerVisibilityMaximized){
         [self.bottomScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
     }
 }
@@ -232,12 +232,12 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 
     if (self.animating) return;
 
-    if (self.scrollDirection == QMBScrollDirectionDown && self.bottomViewControllerVisibility != QMBParallaxStateMaximized && self.bottomScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder){
+    if (self.scrollDirection == QMBScrollDirectionDown && self.bottomViewControllerVisibility != QMBBottomViewControllerVisibilityMaximized && self.bottomScrollView.contentOffset.y - _startTopHeight < -_maxHeightBorder){
         [self presentFullTopViewController:YES];
         return;
     }
 
-    if (self.scrollDirection == QMBScrollDirectionUp && self.bottomViewControllerVisibility == QMBParallaxStateMaximized && -_bottomView.frame.origin.y + self.bottomScrollView.contentOffset.y > -_minHeightBorder){
+    if (self.scrollDirection == QMBScrollDirectionUp && self.bottomViewControllerVisibility == QMBBottomViewControllerVisibilityMaximized && -_bottomView.frame.origin.y + self.bottomScrollView.contentOffset.y > -_minHeightBorder){
         [self presentFullTopViewController:NO];
         return;
     }
@@ -256,12 +256,12 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
          self.animating = NO;
          [self.bottomScrollView setScrollEnabled:YES];
 
-         if (self.bottomViewControllerVisibility == QMBParallaxStateMaximized){
-             self.bottomViewControllerVisibility = QMBParallaxStateMinimized;
+         if (self.bottomViewControllerVisibility == QMBBottomViewControllerVisibilityMaximized){
+             self.bottomViewControllerVisibility = QMBBottomViewControllerVisibilityMinimized;
              self.maxHeightBorder = self.initialMaxHeightBorder;
 
          } else {
-             self.bottomViewControllerVisibility = QMBParallaxStateMaximized;
+             self.bottomViewControllerVisibility = QMBBottomViewControllerVisibilityMaximized;
              self.minHeightBorder = self.initialMinHeightBorder;
          }
      }];

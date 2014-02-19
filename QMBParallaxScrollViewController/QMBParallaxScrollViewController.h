@@ -8,9 +8,9 @@
 
 @class QMBParallaxScrollViewController;
 
-typedef NS_ENUM(NSUInteger, QMBParallaxState) {
-    QMBParallaxStateMinimized,
-    QMBParallaxStateMaximized
+typedef NS_ENUM(NSUInteger, QMBBottomViewControllerVisibility) {
+    QMBBottomViewControllerVisibilityMinimized,
+    QMBBottomViewControllerVisibilityMaximized
 };
 
 typedef NS_ENUM(NSUInteger, QMBScrollDirection) {
@@ -49,8 +49,6 @@ typedef NS_ENUM(NSUInteger, QMBScrollDirection) {
  * TODO: this option will disable decelerated scrolling (known bug)
  */
 @property (readwrite, nonatomic, assign) BOOL enableSectionSupport;
-
-@property (readonly, nonatomic, assign) QMBParallaxState state;
 
 /**
  * The Parallax Scrollview that embeds the bottom (foreground) view

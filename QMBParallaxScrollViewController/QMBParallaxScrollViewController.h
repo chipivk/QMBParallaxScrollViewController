@@ -9,10 +9,8 @@
 @class QMBParallaxScrollViewController;
 
 typedef NS_ENUM(NSUInteger, QMBParallaxState) {
-    QMBParallaxStateVisible,
-    QMBParallaxStateFullSize,
-    QMBParallaxStateContentPeakSize,
-    QMBParallaxStateHidden,
+    QMBParallaxStateMinimized,
+    QMBParallaxStateMaximized
 };
 
 typedef NS_ENUM(NSUInteger, QMBScrollDirection) {

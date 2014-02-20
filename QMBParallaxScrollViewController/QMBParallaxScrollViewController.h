@@ -23,4 +23,6 @@
 
 @property (readwrite, nonatomic, strong) UIScrollView *observedScrollView;
 
+- (void)setTopHeight:(CGFloat)topHeight animated:(BOOL)animated;
+
 @end

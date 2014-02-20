@@ -122,6 +122,17 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 
 }
 
+- (void)setTopHeight:(CGFloat)topHeight animated:(BOOL)animated {
+    [UIView
+        animateKeyframesWithDuration:animated ? 0.2 : 0
+        delay:0
+        options:UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionBeginFromCurrentState
+        animations:^{
+            self.topHeight = topHeight;
+        }
+        completion:nil];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -140,28 +151,17 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     NSParameterAssert(self.observedScrollView == scrollView);
 
-    void (^snap)(CGFloat) = ^(CGFloat height) {
-        [UIView
-            animateKeyframesWithDuration:0.2
-            delay:0
-            options:UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionBeginFromCurrentState
-            animations:^{
-                self.topHeight = height;
-            }
-            completion:nil];
-    };
-
     // If the scroll view is at rest, snap to the nearest position
     if (velocity.y == 0) {
         if (self.topHeight < self.targetHeight * 0.75) {
-            return snap(0);
+            return [self setTopHeight:0 animated:YES];
         }
 
         if (self.topHeight < self.targetHeight + (self.maxHeight - self.targetHeight) / 2) {
-            return snap(self.targetHeight);
+            return [self setTopHeight:self.targetHeight animated:YES];
         }
 
-        return snap(self.maxHeight);
+        return [self setTopHeight:self.maxHeight animated:YES];
     }
 
     if (velocity.y < 0) {
@@ -171,26 +171,15 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    void (^snap)(CGFloat) = ^(CGFloat height) {
-        [UIView
-            animateKeyframesWithDuration:0.2
-            delay:0
-            options:UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionBeginFromCurrentState
-            animations:^{
-                self.topHeight = height;
-            }
-            completion:nil];
-    };
-
     if (self.topHeight < self.targetHeight * 0.75) {
-        return snap(0);
+        return [self setTopHeight:0 animated:YES];
     }
 
     if (self.topHeight < self.targetHeight + (self.maxHeight - self.targetHeight) / 2) {
-        return snap(self.targetHeight);
+        return [self setTopHeight:self.targetHeight animated:YES];
     }
 
-    return snap(self.maxHeight);
+    [self setTopHeight:self.maxHeight animated:YES];
 }
 
 @end

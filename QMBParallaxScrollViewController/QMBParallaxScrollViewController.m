@@ -105,6 +105,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     _observedScrollView = observedScrollView;
 
     _observedScrollView.delegate = self;
+    _observedScrollView.alwaysBounceVertical = YES;
 }
 
 - (void)setTopHeight:(CGFloat)topHeight {

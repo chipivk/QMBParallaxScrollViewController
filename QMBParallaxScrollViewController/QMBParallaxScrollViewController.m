@@ -37,7 +37,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     if (self == nil) return nil;
 
     self.targetHeight = 180;
-    self.maxHeight = 500;
+    self.maxHeight = 460;
 
     return self;
 }

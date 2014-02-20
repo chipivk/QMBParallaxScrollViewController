@@ -96,9 +96,10 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     [self.view addSubview:_bottomView];
 }
 
-- (void)setObservedScrollView:(UIScrollView *)observedScrollView;
+- (void)setObservedScrollView:(UIScrollView *)observedScrollView
 {
     if (_observedScrollView.delegate == self) _observedScrollView.delegate = nil;
+    _observedScrollView.contentOffset = CGPointZero;
 
     _observedScrollView = observedScrollView;
 

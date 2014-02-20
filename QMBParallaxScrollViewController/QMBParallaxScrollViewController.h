@@ -13,7 +13,7 @@
 @property (readonly, nonatomic, strong) UIViewController *topViewController;
 @property (readonly, nonatomic, strong) UIViewController *bottomViewController;
 
-@property (readonly, nonatomic, assign) CGFloat topHeight;
+@property (readwrite, nonatomic, assign) CGFloat topHeight;
 
 @property (readwrite, nonatomic, assign) CGFloat targetHeight;
 @property (readwrite, nonatomic, assign) CGFloat maxHeight;

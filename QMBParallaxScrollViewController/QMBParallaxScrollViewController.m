@@ -22,8 +22,6 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
 @property (readwrite, nonatomic, strong) UIView *topView;
 @property (readwrite, nonatomic, strong) UIView *bottomView;
 
-@property (readwrite, nonatomic, assign) CGFloat topHeight;
-
 @property (readwrite, nonatomic, assign, getter = isAnimating) BOOL animating;
 
 @end

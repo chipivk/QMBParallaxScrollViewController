@@ -46,6 +46,22 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     _topHeight = height;
     _startTopHeight = _topHeight;
 
+    _maxHeight = self.view.frame.size.height-50.0f;
+
+    [self setMaxHeightBorder:MAX(1.5f*_topHeight, 300.0f)];
+    [self setMinHeightBorder:_maxHeight-20.0f];
+
+    _bottomScrollView = [UIScrollView new];
+    _bottomScrollView.backgroundColor = [UIColor clearColor];
+    if ([self respondsToSelector:@selector(topLayoutGuide)]){
+        [self.bottomScrollView setContentInset:UIEdgeInsetsMake(self.topLayoutGuide.length, 0, self.bottomLayoutGuide.length, 0)];
+    }
+    _bottomScrollView.delegate = self;
+    [_bottomScrollView setAlwaysBounceVertical:YES];
+    _bottomScrollView.frame = self.view.bounds;
+
+    [self.view addSubview:_bottomScrollView];
+
     self.topViewController = topViewController;
     self.bottomViewController = bottomViewController;
 

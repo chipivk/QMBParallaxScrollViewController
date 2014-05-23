@@ -51,7 +51,7 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 
 
 
-@interface QMBParallaxScrollViewController : CommonViewController <UIGestureRecognizerDelegate, UIScrollViewDelegate>
+@interface QMBParallaxScrollViewController : UIViewController <UIGestureRecognizerDelegate, UIScrollViewDelegate>
 
 @property (readwrite, nonatomic, strong) id<QMBParallaxScrollViewControllerDelegate> delegate;
 

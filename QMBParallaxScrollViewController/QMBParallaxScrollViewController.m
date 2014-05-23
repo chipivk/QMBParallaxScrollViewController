@@ -64,7 +64,7 @@ static void * QMBParallaxScrollViewControllerFrameContext = &QMBParallaxScrollVi
     }
     _bottomScrollView.delegate = self;
     [_bottomScrollView setAlwaysBounceVertical:YES];
-    _bottomScrollView.frame = self.view.frame;
+    _bottomScrollView.frame = self.view.bounds;
 
     [self.view addSubview:_bottomScrollView];
 
